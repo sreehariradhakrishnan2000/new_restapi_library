@@ -1,0 +1,32 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+# config/routes.yaml
+
+
+get_books:
+    path: /api/books
+    controller: App\Controller\BookController::index
+    methods: GET
+
+get_book:
+    path: /api/books/{id}
+    controller: App\Controller\BookController::show
+    methods: GET
+
+create_book:
+    path: /api/bookcreate
+    controller: App\Controller\BookController::create
+    methods: POST
+
+update_book:
+    path: /api/bookupdate/{id}
+    controller: App\Controller\BookController::update
+    methods: PUT
+
+delete_book:
+    path: /api/bookdelete/{id}
+    controller: App\Controller\BookController::delete
+    methods: DELETE
