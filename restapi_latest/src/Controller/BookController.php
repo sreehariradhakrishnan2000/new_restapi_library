@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
+
 
 
 class BookController extends AbstractController
@@ -19,13 +21,16 @@ class BookController extends AbstractController
     private $bookRepository;
     private $serializer;
     private $validator;
+    private $entityManager; // Added EntityManager property
 
-    public function __construct(BookRepository $bookRepository, SerializerInterface $serializer, ValidatorInterface $validator)
+    public function __construct(BookRepository $bookRepository, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $entityManager)
     {
         $this->bookRepository = $bookRepository;
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->entityManager = $entityManager; // Initialize EntityManager
     }
+    
 
     /**
      * @Route("/api/books", name="get_books", methods={"GET"})
@@ -69,7 +74,7 @@ class BookController extends AbstractController
     }
 
     /**
-     * @Route("/api/book", name="create_book", methods={"POST"})
+     * @Route("/api/bookcreate", name="create_book", methods={"POST"})
      */
     public function create(Request $request): JsonResponse
     {
@@ -88,7 +93,7 @@ class BookController extends AbstractController
             return new JsonResponse(['error' => $errorMessages], Response::HTTP_BAD_REQUEST);
         }
 
-        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager = $this->entityManager;
         $entityManager->persist($book);
         $entityManager->flush();
 
@@ -125,7 +130,7 @@ class BookController extends AbstractController
             return new JsonResponse(['error' => $errorMessages], Response::HTTP_BAD_REQUEST);
         }
 
-        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager = $this->entityManager;
         $entityManager->flush();
 
         // Return the updated book DTO
@@ -146,7 +151,7 @@ class BookController extends AbstractController
      */
     public function delete(Book $book): JsonResponse
     {
-        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager = $this->entityManager;
         $entityManager->remove($book);
         $entityManager->flush();
 
