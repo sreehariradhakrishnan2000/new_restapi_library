@@ -30,3 +30,9 @@ delete_book:
     path: /api/bookdelete/{id}
     controller: App\Controller\BookController::delete
     methods: DELETE
+
+# config/routes.yaml
+app_login:
+    path: /api/login
+    controller: App\Controller\SecurityController::login
+    methods: ['POST']

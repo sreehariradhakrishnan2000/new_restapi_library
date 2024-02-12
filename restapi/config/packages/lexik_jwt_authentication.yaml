@@ -1,4 +1,6 @@
 lexik_jwt_authentication:
-    secret_key: '%env(resolve:JWT_SECRET_KEY)%'
-    public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
-    pass_phrase: '%env(JWT_PASSPHRASE)%'
+    secret_key: '%env(APP_SECRET)%' # Use your secret key here
+    public_key: '%env(PUBLIC_KEY_PATH)%' # If you're using public/private key pair
+    pass_phrase: '%env(PASSPHRASE)%' # If your key is passphrase protected
+    token_ttl: 3600 # Token expiration time in seconds
+    user_identity_field: username # Field used as the user identity (e.g., username or email)
