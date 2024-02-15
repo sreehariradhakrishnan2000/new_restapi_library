@@ -1,27 +1,21 @@
 <?php
-
 // src/Entity/User.php
 
 namespace App\Entity;
 
+use App\Repository\UserRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- */
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
+    #[ORM\Column(type: 'string', unique: true, length: 255)]
     private $username;
 
     /**

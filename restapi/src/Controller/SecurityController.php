@@ -21,7 +21,6 @@ class SecurityController extends AbstractController
         $this->authService = $authService;
     }
 
-   
     public function login(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -35,7 +34,7 @@ class SecurityController extends AbstractController
             $token = $this->authService->authenticate($authDto);
 
             return new JsonResponse(['token' => $token]);
-        } catch (BadCredentialsException $e) {
+        } catch (BadCredentialsException $e) { 
             return new JsonResponse(['error' => $e->getMessage()], 401);
         }
     }
