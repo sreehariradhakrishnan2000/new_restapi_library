@@ -18,14 +18,10 @@ class User implements UserInterface
     #[ORM\Column(type: 'string', unique: true, length: 255)]
     private $username;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private $password;
 
-    /**
-     * @ORM\Column(type="json")
-     */
+    #[ORM\Column(type: 'json')]
     private $roles = [];
 
     public function getId(): ?int
