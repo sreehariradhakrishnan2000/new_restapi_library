@@ -1,84 +1,100 @@
 <?php
-// src/Entity/User.php
 
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface
+#[ORM\Table(name: '`user`')]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', unique: true, length: 255)]
-    private $username;
+    #[ORM\Column(length: 180, unique: true)]
+    private ?string $email = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $password;
+    #[ORM\Column]
+    private array $roles = [];
 
-    #[ORM\Column(type: 'json')]
-    private $roles = [];
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
+    private ?string $password = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUsername(): ?string
+    public function getEmail(): ?string
     {
-        return $this->username;
+        return $this->email;
     }
 
-    public function setUsername(string $username): self
+    public function setEmail(string $email): static
     {
-        $this->username = $username;
+        $this->email = $email;
 
         return $this;
     }
 
-    public function getPassword(): ?string
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
     {
         return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword(string $password): static
     {
         $this->password = $password;
 
         return $this;
     }
 
-    public function getRoles(): array
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
     {
-        // Doctrine automatically converts JSON string to array, so just return the property
-        return $this->roles;
-    }
-
-    public function setRoles(array $roles): self
-    {
-        // Since roles are stored as JSON in the database, we need to encode them before setting
-        $this->roles = json_encode($roles);
-
-        return $this;
-    }
-
-    public function getSalt()
-    {
-        // Not needed when using bcrypt or argon2i
-    }
-
-    public function eraseCredentials()
-    {
-        // Remove sensitive data stored on the user, like plaintext passwords
-    }
-
-    public function getUserIdentifier(): string
-    {
-        return $this->username;
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }
