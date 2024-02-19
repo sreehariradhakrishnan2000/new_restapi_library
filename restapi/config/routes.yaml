@@ -33,6 +33,6 @@ delete_book:
 
 # config/routes.yaml
 app_login:
-    path: /api/login
+    path: /login
     controller: App\Controller\SecurityController::login
     methods: ['POST']
