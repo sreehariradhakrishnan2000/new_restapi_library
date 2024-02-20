@@ -29,9 +29,7 @@ class BookController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @Route("/api/books", name="get_books", methods={"GET"})
-     */
+    #[Route('/api/books', name: 'get_books', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
         $page = $request->query->getInt('page', 1);
@@ -69,17 +67,13 @@ class BookController extends AbstractController
         return new JsonResponse($this->serializer->serialize($responseData, 'json'), Response::HTTP_OK, [], true);
     }
 
-    /**
-     * @Route("/api/books/{id}", name="get_book", methods={"GET"})
-     */
+    #[Route('/api/books/{id}', name: 'get_book', methods: ['GET'])]
     public function show(Book $book): JsonResponse
     {
         return new JsonResponse($this->serializer->serialize($this->serializeBookDto($book), 'json'), Response::HTTP_OK, [], true);
     }
 
-    /**
-     * @Route("/api/bookcreate", name="create_book", methods={"POST"})
-     */
+    #[Route('/api/bookcreate', name: 'create_book', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -115,9 +109,7 @@ class BookController extends AbstractController
         return new JsonResponse(['message' => 'Book created!', 'book' => $data], Response::HTTP_CREATED);
     }
 
-    /**
-     * @Route("/api/bookupdate/{id}", name="update_book", methods={"PUT"})
-     */
+    #[Route('/api/bookupdate/{id}', name: 'update_book', methods: ['PUT'])]
     public function update(Request $request, Book $book): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -137,9 +129,7 @@ class BookController extends AbstractController
         return new JsonResponse($this->serializer->serialize($this->serializeBookDto($book), 'json'), Response::HTTP_OK, [], true);
     }
 
-    /**
-     * @Route("/api/bookdelete/{id}", name="delete_book", methods={"DELETE"})
-     */
+    #[Route('/api/bookdelete/{id}', name: 'delete_book', methods: ['DELETE'])]
     public function delete(Book $book): JsonResponse
     {
         $this->entityManager->remove($book);
