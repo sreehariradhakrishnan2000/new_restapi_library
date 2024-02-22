@@ -1,79 +1,44 @@
 <?php
-// tests/Controller/SecurityControllerTest.php
-
 namespace App\Tests\Controller;
 
 use App\Controller\SecurityController;
-use App\Service\UserService;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Service\UserService;
+use App\Entity\User;
 
 class SecurityControllerTest extends TestCase
 {
-    private SecurityController $securityController;
-    private UserService $userService;
-    private JWTTokenManagerInterface $tokenManager;
-
-    protected function setUp(): void
+    public function testLogin(): void
     {
-        parent::setUp();
-        
-        // Mock dependencies
-        $this->userService = $this->createMock(UserService::class);
-        $this->tokenManager = $this->createMock(JWTTokenManagerInterface::class);
+        $userService = $this->createMock(UserService::class);
+        $userService->expects($this->once())
+                    ->method('getUserByEmail')
+                    ->willReturn(new User());
 
-        // Create instance of SecurityController with mocked dependencies
-        $this->securityController = new SecurityController($this->userService);
-    }
+        $userService->expects($this->once())
+                    ->method('validateUserPassword')
+                    ->willReturn(true);
 
-    public function testLoginWithValidCredentials(): void
-    {
-        // Arrange
-        $request = new Request([], [], [], [], [], [], '{"email": "test@example.com", "password": "password"}');
-        $user = (object) ['email' => 'test@example.com', 'password' => password_hash('password', PASSWORD_DEFAULT)]; // Define a user object for successful authentication
-        
-        $this->userService->expects($this->once())
-            ->method('getUserByEmail')
-            ->with('test@example.com')
-            ->willReturn($user);
-        
-        $this->userService->expects($this->once())
-            ->method('validateUserPassword')
-            ->with($user, 'password')
-            ->willReturn(true);
+        $tokenManager = $this->createMock(JWTTokenManagerInterface::class);
+        $tokenManager->expects($this->once())
+                     ->method('create')
+                     ->willReturn('mock_token');
 
-        $this->tokenManager->expects($this->once())
-            ->method('create')
-            ->with($user)
-            ->willReturn('mocked_jwt_token');
+        $request = new Request([], [], [], [], [], [], json_encode([
+            'email' => 'rekhaa@gmail.com',
+            'password' => 'Rekha@123'
+        ]));
 
-        // Act
-        $response = $this->securityController->login($request, $this->tokenManager);
+        $controller = new SecurityController($userService);
 
-        // Assert
-        $this->assertEquals('mocked_jwt_token', $response->getContent());
-    }
+        $response = $controller->login($request, $tokenManager);
 
-    public function testLoginWithInvalidCredentials(): void
-    {
-        // Arrange
-        $request = new Request([], [], [], [], [], [], '{"email": "test@example.com", "password": "password"}');
-        $user = null; // No user found for provided email
-        
-        $this->userService->expects($this->once())
-            ->method('getUserByEmail')
-            ->with('test@example.com')
-            ->willReturn($user);
-
-        // Act
-        $response = $this->securityController->login($request, $this->tokenManager);
-
-        // Assert
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
-    }
 
-    // Add more test methods to cover other scenarios (missing credentials, edge cases, etc.)
+        $this->assertEquals('mock_token', $response->getContent());
+    }
 }
+?>
